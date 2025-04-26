@@ -1,0 +1,47 @@
+<app-nav></app-nav>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 75vh;">
+  <div class="container text-center p-4 shadow-lg rounded bg-light  d-flex flex-column" style="width: 400px; height: 315px;">
+    <h2>Recuperar Contraseña</h2>
+
+    <form [formGroup]="form"  (ngSubmit)="recover()" >
+      <div class="form-group text-start mt-2">
+        <label for="email">Email:</label>
+        <input type="email"
+          id="email"
+          name="email"
+          formControlName="email"
+          class="form-control"
+          placeholder="Ingrese su email"
+          [style.borderColor]="form.get('email')?.invalid && (form.get('email')?.touched || form.get('email')?.dirty) || form.errors?.['emailsNotMatch'] ? '#FF5733' : ''"
+          required>
+          @if (form.get('email')?.invalid && (form.get('email')?.touched || form.get('email')?.dirty)){
+            @if (form.get('email')?.hasError('required')){<span class="error">Email es obligatorio</span>}
+            @else if (form.get('email')?.hasError('pattern')){<span class="error">Formato inválido</span>}
+          }
+      </div>
+
+      <div class="form-group text-start mt-2">
+        <label for="emailConfirm">Confirmar Contraseña:</label>
+        <input type="email"
+          id="emailConfirm"
+          name="emailConfirm"
+          formControlName="emailConfirm"
+          class="form-control"
+          placeholder="Confime contraseña"
+          [style.borderColor]="form.get('emailConfirm')?.invalid && (form.get('emailConfirm')?.touched || form.get('emailConfirm')?.dirty) || form.errors?.['emailsNotMatch'] ? '#FF5733' : ''"
+          required>
+          @if (form.get('emailConfirm')?.invalid && (form.get('emailConfirm')?.touched || form.get('emailConfirm')?.dirty)){
+            @if (form.get('emailConfirm')?.hasError('required')){<span class="error">Email de Confirmación es obligatorio<br></span>}
+            @else if (form.get('emailConfirm')?.hasError('pattern')){<span class="error">Forrmato inválido<br></span>}
+          }
+          @if(form.errors?.['emailsNotMatch']){<span class="error">Los email no coinciden</span>}
+      </div>
+
+
+      <button type="submit" class="btn btn-dark w-100 mt-3" [disabled]="form.invalid || form.errors?.['emailsNotMatch']" [disabled]="isButtonDisabled"
+     >Recuperar Contraseña</button>
+    </form>
+
+    <p class="message mt-3">{{ message }}</p>
+  </div>
+</div>

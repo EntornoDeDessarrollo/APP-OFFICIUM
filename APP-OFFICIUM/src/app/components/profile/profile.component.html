@@ -1,0 +1,65 @@
+<app-main-nav></app-main-nav>
+<div class="container-fluid">
+  <div class="row">
+    <section class="row">
+
+      <span class="col-md-2"></span>
+      <div class="col-md-8">
+
+        <!-- PERFIL -->
+        <div class="card">
+          <a href="#" class="d-flex flex-column mb-2 text-decoration-none text-muted">
+            <img src="https://media.licdn.com/dms/image/v2/D5616AQFt3bUkfVx98w/profile-displaybackgroundimage-shrink_350_1400/B56ZY2NSxKGsAc-/0/1744666180103?e=1750291200&v=beta&t=NCumuBbH6nugaPnEtit6Gi_nVqaEK-a8x-8mxbAuJDg"
+            height="300"
+            alt="Nombre usuario"
+            class="card-img-top mt-n5 mb-2 mx-auto ">
+
+            <div class="card-body d-flex d-md-block justify-content-center">
+              <div class="">
+                <img src="https://media.licdn.com/dms/image/v2/C5603AQGZgthdE_5d-g/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1522663699414?e=1750291200&amp;v=beta&amp;t=BWNyUzhuXSlleBVs5DEiY76rE6Ym41v6tKwJQWtkAEI"
+                width="200"
+                height="200"
+                alt="nombre usuario"
+                class="mt-n5 mb-2 mx-auto rounded-circle border border-3 border-light"
+                style="margin-top: -100px;">
+                <h3 class="card-title text-black">Leobardo Ríos</h3>
+                <p class="card-subtitle">Desarrollador Web</p>
+                <p class="card-text">Altea</p>
+              </div>
+
+            </div>
+
+          </a>
+          <!-- Button trigger modal -->
+           <div class="text-end" width="200">
+           <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop" >
+            Editar perfil
+          </button>
+
+          <!-- Modal -->
+          <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <app-new-profile></app-new-profile>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary">Understood</button>
+                </div>
+              </div>
+            </div>
+          </div>
+           </div>
+
+        </div>
+      </div>
+      <span class="col-md-2 "></span>
+
+    </section>
+  </div>
+</div>

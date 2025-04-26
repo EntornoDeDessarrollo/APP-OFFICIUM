@@ -1,0 +1,157 @@
+<app-nav></app-nav>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 75vh;" >
+  <div class="container text-center p-2 shadow-lg rounded bg-light" style="width: 800px; height: 460px;">
+    <div  class="container"  style="width: 100%;">
+      <div class="row" style="width: 100%;">
+
+        <!-- IMG PROFILE -->
+        <div class="col-3  d-flex justify-content-center align-items-center">
+          <div *ngIf="imagePreview" class="">
+            <img [src]="imagePreview"
+             [alt]="selectedFile?.name"
+             class="rounded-circle border border-secondary mt-5"
+             style="width: 200px; height: 200px; object-fit: cover;">
+          </div>
+        </div>
+
+        <div class="col" >
+
+          <!-- TITULO -->
+          <h2 class="form-check-label row justify-content-center mt-2" for="tipoUsuarioSwitch">
+            {{ tipoUsuario === 'empresa' ? 'Empresa' : 'Desempleado' }}
+          </h2>
+          <!-- TIPO DE PERFIL -->
+          <div class="form-check form-switch d-flex justify-content-center mt-3 mb-3 row" >
+            <input
+              class="form-check-input   row "
+              type="checkbox"
+              id="tipoUsuarioSwitch"
+              [checked]="tipoUsuario === 'empresa'"
+              (change)="alternarTipoUsuario($event)"
+            />
+            <Label class="row ms-1" style="font-size: 15px; width: auto;">DESEMPLEADO / EMPRESA</Label>
+
+          </div>
+
+          <!-- DESMPLEADO -->
+          <form *ngIf="tipoUsuario === 'desempleado'" [formGroup]="formDesempleado" (ngSubmit)="registrar()" >
+            <div class="row">
+              <div class="mb-3 col  text-start">
+                <label>Nombre</label>
+                <input type="text" formControlName="nombre" class="form-control" [style.borderColor]="formDesempleado.get('nombre')?.invalid && (formDesempleado.get('nombre')?.touched || formDesempleado.get('nombre')?.dirty) ? '#FF5733' : ''"/>
+                @if (formDesempleado.get('nombre')?.invalid && (formDesempleado.get('nombre')?.touched || formDesempleado.get('nombre')?.dirty)){
+                  @if (formDesempleado.get('nombre')?.hasError('required')){<span class="error">Nombre es obligatorio</span>}
+                  @else if (formDesempleado.get('nombre')?.hasError('minlength')){<span class="error">3 caracteres mínimo</span>}
+                }
+              </div>
+              <div class="mb-3 col  text-start">
+                <label>Apellido</label>
+                <input type="text" formControlName="apellido" class="form-control" [style.borderColor]="formDesempleado.get('apellido')?.invalid && (formDesempleado.get('apellido')?.touched || formDesempleado.get('apellido')?.dirty) ? '#FF5733' : ''" />
+                @if (formDesempleado.get('apellido')?.invalid && (formDesempleado.get('apellido')?.touched || formDesempleado.get('apellido')?.dirty)){
+                  @if (formDesempleado.get('apellido')?.hasError('required')){<span class="error">Nombre es obligatorio</span>}
+                  @else if (formDesempleado.get('apellido')?.hasError('minlength')){<span class="error">3 caracteres mínimo</span>}
+                }
+              </div>
+            </div>
+            <div class="row">
+              <div class="mb-3 col text-start">
+                <label>DNI</label>
+                <input type="text" formControlName="dni" class="form-control" [style.borderColor]="formDesempleado.get('dni')?.invalid && (formDesempleado.get('dni')?.touched || formDesempleado.get('dni')?.dirty) ? '#FF5733' : ''" />
+                @if (formDesempleado.get('dni')?.invalid && (formDesempleado.get('dni')?.touched || formDesempleado.get('dni')?.dirty)){
+                  @if (formDesempleado.get('dni')?.hasError('required')){<span class="error">Nombre es obligatorio</span>}
+                  @else if (formDesempleado.get('dni')?.hasError('invalidFormat')){<span class="error">Formato Invalido</span>}
+                  @else if (formDesempleado.get('dni')?.hasError('invalidLetter')){<span class="error">Letra Invalida</span>}
+                }
+              </div>
+              <div class="mb-3 col text-start">
+                <label>Portafolios (URLs)</label>
+                <input type="text" formControlName="portafolios" class="form-control" [style.borderColor]="formDesempleado.get('portafolios')?.invalid && (formDesempleado.get('portafolios')?.touched || formDesempleado.get('portafolios')?.dirty) ? '#FF5733' : ''" />
+                @if (formDesempleado.get('portafolios')?.invalid && (formDesempleado.get('portafolios')?.touched || formDesempleado.get('portafolios')?.dirty)){
+                  @if (formDesempleado.get('portafolios')?.hasError('required')){<span class="error">Portafolio obligatorio</span>}
+                  @else if (formDesempleado.get('portafolios')?.hasError('invalidUrl')){<span class="error">No es un URl válidio</span>}
+                }
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="mb-3 col text-start">
+                <label >Disponibilidad</label>
+                <select formControlName="disponibilidad" class="form-control" [style.borderColor]="formDesempleado.get('disponibilidad')?.invalid && (formDesempleado.get('disponibilidad')?.touched || formDesempleado.get('disponibilidad')?.dirty) ? '#FF5733' : ''" >
+                  <option value="">Seleccione</option>
+                  <option *ngFor="let d of disponibilidades" [value]="d">{{ d }}</option>
+                </select>
+                @if (formDesempleado.get('disponibilidad')?.invalid && (formDesempleado.get('disponibilidad')?.touched || formDesempleado.get('disponibilidad')?.dirty)){
+                  @if (formDesempleado.get('disponibilidad')?.hasError('required')){<span class="error">Disponibilidad obligatoria</span>}
+                }
+              </div>
+              <div class="mb-3 col text-start">
+                <label for="imagen" >Imagen de perfil</label>
+                <input type="file" class="form-control"  formControlName="foto"  (change)="onFileSelected($event)" accept="image/*"  [style.borderColor]="formDesempleado.get('foto')?.invalid && (formDesempleado.get('foto')?.touched || formDesempleado.get('foto')?.dirty) ? '#FF5733' : ''" />
+                @if (formDesempleado.get('foto')?.invalid && (formDesempleado.get('foto')?.touched || formDesempleado.get('foto')?.dirty)){
+                  @if (formDesempleado.get('foto')?.hasError('required')){<span class="error">Foto obligatoria</span>}
+                }
+            </div>
+            </div>
+
+            <button class="btn btn-dark" type="submit" [disabled]="formDesempleado.invalid">Registrar</button>
+
+          </form>
+
+          <!-- EMPRESA -->
+          <form *ngIf="tipoUsuario === 'empresa'" [formGroup]="formEmpresa"  (ngSubmit)="registrar()">
+            <div class="row">
+              <div class="mb-3 col text-start">
+                <label>Nombre Empresa</label>
+                <input type="text" formControlName="nombreEmpresa" class="form-control" [style.borderColor]="formEmpresa.get('nombreEmpresa')?.invalid && (formEmpresa.get('nombreEmpresa')?.touched || formEmpresa.get('nombreEmpresa')?.dirty) ? '#FF5733' : ''" />
+                @if (formEmpresa.get('nombreEmpresa')?.invalid && (formEmpresa.get('nombreEmpresa')?.touched || formEmpresa.get('nombreEmpresa')?.dirty)){
+                  @if (formEmpresa.get('nombreEmpresa')?.hasError('required')){<span class="error">Nombre empresa obligatorio</span>}
+                  @else if (formEmpresa.get('nombreEmpresa')?.hasError('minlength')){<span class="error">3 caracteres mínimo</span>}
+                }
+              </div>
+              <div class="mb-3 col text-start">
+                <label>CIF '(A58818501)'</label>
+                <input type="text" formControlName="nif" class="form-control" [style.borderColor]="formEmpresa.get('nif')?.invalid && (formEmpresa.get('nif')?.touched || formEmpresa.get('nif')?.dirty) ? '#FF5733' : ''"  />
+              </div>
+            </div>
+            <div class="row">
+              <div class="mb-3 col text-start">
+                <label>Sector</label>
+                <select formControlName="idSector" class="form-control" [style.borderColor]="formEmpresa.get('idSector')?.invalid && (formEmpresa.get('idSector')?.touched || formEmpresa.get('idSector')?.dirty) ? '#FF5733' : ''" >
+                  <option *ngFor="let sector of sectores" [value]="sector.IDSector">{{ sector.Nombre }}</option>
+                </select>
+                @if (formEmpresa.get('idSector')?.invalid && (formEmpresa.get('idSector')?.touched || formEmpresa.get('idSector')?.dirty)){
+                  @if (formEmpresa.get('idSector')?.hasError('required')){<span class="error">Sector obligatorio</span>}
+                }
+              </div>
+              <div class="mb-3 col text-start">
+                <label>Ubicación</label>
+                <input type="text" formControlName="ubicacion" class="form-control" [style.borderColor]="formEmpresa.get('ubicacion')?.invalid && (formEmpresa.get('ubicacion')?.touched || formEmpresa.get('ubicacion')?.dirty) ? '#FF5733' : ''"  />
+                @if (formEmpresa.get('ubicacion')?.invalid && (formEmpresa.get('ubicacion')?.touched || formEmpresa.get('ubicacion')?.dirty)){
+                  @if (formEmpresa.get('ubicacion')?.hasError('required')){<span class="error">Ubicación obligatoria</span>}
+                }
+              </div>
+            </div>
+            <div class="row">
+              <div class="mb-3 col text-start">
+                <label>Sitio Web</label>
+                <input type="text" formControlName="sitioWeb" class="form-control" [style.borderColor]="formEmpresa.get('sitioWeb')?.invalid && (formEmpresa.get('sitioWeb')?.touched || formEmpresa.get('sitioWeb')?.dirty) ? '#FF5733' : ''"  />
+                @if (formEmpresa.get('sitioWeb')?.invalid && (formEmpresa.get('sitioWeb')?.touched || formEmpresa.get('sitioWeb')?.dirty)){
+                  @if (formEmpresa.get('sitioWeb')?.hasError('required')){<span class="error">Sitio web obligatorio</span>}
+                  @else if (formEmpresa.get('sitioWeb')?.hasError('invalidUrl')){<span class="error">No es un URl válidio</span>}
+                }
+              </div>
+              <div class="mb-3 col text-start">
+                  <label for="imagen" >Imagen de perfil</label>
+                  <input type="file" class="form-control" formControlName="foto" (change)="onFileSelected($event)" accept="image/*" [style.borderColor]="formEmpresa.get('foto')?.invalid && (formEmpresa.get('foto')?.touched || formEmpresa.get('foto')?.dirty) ? '#FF5733' : ''"  />
+                  @if (formEmpresa.get('foto')?.invalid && (formEmpresa.get('foto')?.touched || formEmpresa.get('foto')?.dirty)){
+                    @if (formEmpresa.get('foto')?.hasError('required')){<span class="error">Foto obligatoria</span>}
+                  }
+              </div>
+            </div>
+            <button class="btn btn-dark" type="submit" [disabled]="formEmpresa.invalid">Registrar</button>
+          </form>
+        </div >
+      </div>
+    </div>
+</div>
+</div>

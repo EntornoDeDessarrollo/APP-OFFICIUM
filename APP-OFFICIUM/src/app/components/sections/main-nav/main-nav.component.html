@@ -1,0 +1,67 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark " aria-label="Navegación global">
+  <div class="container-fluid">
+    <!-- LOGO -->
+    <a class="navbar-brand ms-md-5" href="#" aria-label="OFFICIUM">
+      <img src="logo/OFFICIUM.png" alt="Logo"  width="40" height="40">
+    </a>
+    <!-- BOTON HAMBURGESA -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- BUSCADOR -->
+    <div class="collapse navbar-collapse justify-content-center " id="navbarNav">
+      <form class="d-flex w-lg-50">
+        <div class="input-group">
+          <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar">
+          <button class="btn btn-outline-secondary" type="submit">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+            </svg>
+          </button>
+        </div>
+      </form>
+
+      <!-- HOME -->
+      <ul class="navbar-nav ms-lg-auto">
+        <li class="nav-item ">
+          <a class="nav-link d-flex mt-2 active" aria-current="page" href="https://www.linkedin.com/feed/?doFeedRefresh=true&amp;nis=true&amp;">
+            <fa-icon [icon]="faHome" class="fs-5"></fa-icon>
+            <span class="d-block d-lg-none ms-3">Inicio</span>
+            <span class="d-none d-lg-block ms-3">Inicio</span>
+          </a>
+        </li>
+
+        <!-- NOTIFICACIONES -->
+        <li class="nav-item " >
+          <a class="nav-link d-flex mt-2" href="#">
+            <span class="position-relative">
+              <fa-icon [icon]="faBell" class="me-2 fs-4"></fa-icon>
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                -1
+              </span>
+            </span>
+            <span class="d-block d-lg-none ms-3">Notificaciones</span>
+            <span class="d-none d-lg-block  ms-3">Notificaciones</span>
+          </a>
+        </li>
+        <!-- PERFIL -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMe" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="https://media.licdn.com/dms/image/v2/C5603AQGZgthdE_5d-g/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1522663699414?e=1750291200&amp;v=beta&amp;t=BWNyUzhuXSlleBVs5DEiY76rE6Ym41v6tKwJQWtkAEI"
+            alt="Leobardo Salvador Ríos Suárez" width="50" height="50" class="rounded-circle">
+            <span class="d-none d-lg-inline ms-2">Yo</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMe">
+            <li><a class="dropdown-item" [routerLink]="'/profile'">Perfil</a></li>
+            <li><a class="dropdown-item" href="#">Cuenta</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
+          </ul>
+        </li>
+
+
+      </ul>
+    </div>
+  </div>
+</nav>

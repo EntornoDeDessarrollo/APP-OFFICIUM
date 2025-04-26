@@ -1,0 +1,50 @@
+<app-nav></app-nav>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 75vh;">
+  <div class="container text-center p-2 shadow-lg rounded bg-light" style="width: 400px; height: 410px;">
+    <h2>Login</h2>
+
+    <form [formGroup]="form"  (ngSubmit)="login()" >
+      <div class="form-group text-start">
+        <label for="email">Email:</label>
+        <input type="email"
+          id="email"
+          formControlName="email"
+          name="email"
+          class="form-control"
+          placeholder="Ingrese su email"
+          [style.borderColor]="form.get('email')?.invalid && (form.get('email')?.touched || form.get('email')?.dirty) || form.errors?.['emailsNotMatch'] ? '#FF5733' : ''"
+          required>
+          @if (form.get('email')?.invalid && (form.get('email')?.touched || form.get('email')?.dirty)){
+            @if (form.get('email')?.hasError('required')){<span class="error">Email es obligatorio</span>}
+            @else if (form.get('email')?.hasError('pattern')){<span class="error">Formato inválido</span>}
+          }
+      </div>
+
+      <div class="form-group text-start">
+        <label for="password">Contraseña:</label>
+        <input type="password"
+          id="password"
+          formControlName="password"
+          name="password"
+          class="form-control"
+          placeholder="Ingrese su contraseña"
+          [style.borderColor]="form.get('password')?.invalid && (form.get('password')?.touched || form.get('password')?.dirty)  ? '#FF5733' : ''"
+          required>
+          @if (form.get('password')?.invalid && (form.get('password')?.touched || form.get('password')?.dirty)){
+            @if (form.get('password')?.hasError('required')){<span class="error">Password obligatorio</span>}
+            @else if (form.get('password')?.hasError('pattern')){<span class="error">Formato inválido (1 Mayus, 1 Minus, 1 Num)</span>}
+          }
+      </div>
+
+      <button type="submit" class="btn btn-dark w-100 mt-3" [disabled]="form.invalid" [disabled]="isButtonDisabled"
+      >Iniciar Sesión</button>
+    </form>
+
+    <button (click)="logout()" class="btn btn-danger w-100 mt-2">Cerrar Sesión</button>
+    <button (click)="testAuth()" class="btn btn-success w-100 mt-2">Probar Token</button>
+    <button (click)="checkToken()" class="btn btn-info w-100 mt-2 mb-1">Ver Token</button>
+
+    <a class="fs-5 fw-bold text-muted" routerLink="/recover" >Recuperar Contraseña</a>
+    <p class="message mt-2">{{ message }}</p>
+  </div>
+</div>

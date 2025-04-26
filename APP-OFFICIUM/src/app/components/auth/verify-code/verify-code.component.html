@@ -1,0 +1,29 @@
+<app-nav></app-nav>
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="container text-center p-4 shadow-lg rounded bg-light" style="width: 400px; height: 300px;">
+    <h2>Verificación</h2>
+    <p>Verifica el código enviado a tu correo electrónico: {{ email }}</p>
+    <form [formGroup]="form"  (ngSubmit)="verifyCode()">
+      <div class="form-group text-start">
+        <label for="code">Codigo:</label>
+        <input type="string"
+          id="code"
+          formControlName="code"
+          name="code"
+          class="form-control"
+          placeholder="Ingrese su codigo"
+          [style.borderColor]="form.get('code')?.invalid && (form.get('code')?.touched || form.get('code')?.dirty) ? '#FF5733' : ''"
+          required>
+          @if (form.get('code')?.invalid && (form.get('code')?.touched || form.get('code')?.dirty)){
+            @if (form.get('code')?.hasError('required')){<span class="error">Código obligatorio<br></span>}
+            @else if (form.get('code')?.hasError('pattern')){<span class="error">Forrmato inválido<br></span>}
+          }
+      </div>
+
+      <button type="submit" class="btn btn-dark w-100 mt-3" [disabled]="form.invalid" [disabled]="isButtonDisabled"
+      >Verificar</button>
+    </form>
+    <p class="message mt-3">{{ message }}</p>
+  </div>
+</div>
