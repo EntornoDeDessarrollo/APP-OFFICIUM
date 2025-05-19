@@ -375,7 +375,7 @@ export class NewProfileComponent implements OnInit{
    borrarTokenRegistro() {
     this.authService.logout().subscribe({
       next:() => {
-        this.authService.removeToken();
+        this.authService.removeData();
         this.router.navigate(['/login']);
       },
       error:(error) => {

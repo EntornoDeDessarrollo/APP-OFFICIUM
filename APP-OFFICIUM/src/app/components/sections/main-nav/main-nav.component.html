@@ -1,8 +1,8 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark " aria-label="Navegación global">
   <div class="container-fluid">
     <!-- LOGO -->
-    <a class="navbar-brand ms-md-5" href="#" aria-label="OFFICIUM">
-      <img src="logo/OFFICIUM.png" alt="Logo"  width="40" height="40">
+    <a class="navbar-brand ms-md-5" [routerLink]="'/kick-off'" aria-label="OFFICIUM">
+      <img src="Icon.ico" alt="Logo"  width="40" height="40">
     </a>
     <!-- BOTON HAMBURGESA -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -48,15 +48,16 @@
         <!-- PERFIL -->
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMe" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="https://media.licdn.com/dms/image/v2/C5603AQGZgthdE_5d-g/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1522663699414?e=1750291200&amp;v=beta&amp;t=BWNyUzhuXSlleBVs5DEiY76rE6Ym41v6tKwJQWtkAEI"
-            alt="Leobardo Salvador Ríos Suárez" width="50" height="50" class="rounded-circle">
-            <span class="d-none d-lg-inline ms-2">Yo</span>
+            <img  [src]="(fotoPerfil$ | async)"
+            alt="Leobardo Salvador Ríos Suárez" width="50" height="50" class="rounded-circle"
+            style=" object-fit: cover;">
+            <span class="d-none d-lg-inline ms-2">{{nombre$ | async}}</span>
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMe">
             <li><a class="dropdown-item" [routerLink]="'/profile'">Perfil</a></li>
             <li><a class="dropdown-item" href="#">Cuenta</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
+            <li><a class="dropdown-item" (click)="logout()">Cerrar sesión</a></li>
           </ul>
         </li>
 

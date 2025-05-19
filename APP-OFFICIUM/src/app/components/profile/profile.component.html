@@ -1,14 +1,14 @@
 <app-main-nav></app-main-nav>
-<div class="container-fluid">
+<div class="container-fluid ">
   <div class="row">
     <section class="row">
 
       <span class="col-md-2"></span>
-      <div class="col-md-8">
+      <div class="col-md-8" >
 
         <!-- PERFIL -->
-        <div class="card">
-          <a href="#" class="d-flex flex-column mb-2 text-decoration-none text-muted">
+        <div class="card" >
+          <a href="#" class="d-flex flex-column mb-4 text-decoration-none text-muted">
             <img src="https://media.licdn.com/dms/image/v2/D5616AQFt3bUkfVx98w/profile-displaybackgroundimage-shrink_350_1400/B56ZY2NSxKGsAc-/0/1744666180103?e=1750291200&v=beta&t=NCumuBbH6nugaPnEtit6Gi_nVqaEK-a8x-8mxbAuJDg"
             height="300"
             alt="Nombre usuario"
@@ -16,47 +16,1335 @@
 
             <div class="card-body d-flex d-md-block justify-content-center">
               <div class="">
-                <img src="https://media.licdn.com/dms/image/v2/C5603AQGZgthdE_5d-g/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1522663699414?e=1750291200&amp;v=beta&amp;t=BWNyUzhuXSlleBVs5DEiY76rE6Ym41v6tKwJQWtkAEI"
+                <img [src]="(fotoPerfil$ | async)"
                 width="200"
                 height="200"
                 alt="nombre usuario"
                 class="mt-n5 mb-2 mx-auto rounded-circle border border-3 border-light"
-                style="margin-top: -100px;">
-                <h3 class="card-title text-black">Leobardo Ríos</h3>
-                <p class="card-subtitle">Desarrollador Web</p>
-                <p class="card-text">Altea</p>
+                style="margin-top: -100px; object-fit: cover;">
+                <h3 class="card-title text-black">{{nombre$ | async}}</h3>
+                <p *ngIf="isEmpresa$ | async" class="card-subtitle">Empresa</p>
+                <p *ngIf="isDesempleado$ | async" class="card-subtitle">Desempleado</p>
+
               </div>
 
             </div>
 
           </a>
-          <!-- Button trigger modal -->
-           <div class="text-end" width="200">
-           <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop" >
-            Editar perfil
-          </button>
+          <!-- BOTONES EDITAR Y BORRAR -->
+          <div class="text-end" width="800">
 
-          <!-- Modal -->
-          <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <app-new-profile></app-new-profile>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="button" class="btn btn-primary">Understood</button>
+            <!-- BORRAR -->
+            <button type="button" class="btn btn-danger m-2"  (click)="delete()" >
+              Eliminar Cuenta
+            </button>
+
+            <!-- EDITAR -->
+            <button type="button" class="btn btn-dark m-2" data-bs-toggle="modal" data-bs-target="#EditarPerfil" >
+              Editar perfil
+            </button>
+            <!-- MODAL EDITAR -->
+            <div class="modal fade" id="EditarPerfil" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="EditarPerfilLabel" aria-hidden="true" width="800">
+              <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" width="800">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 *ngIf="isEmpresa$ | async" class="modal-title" id="EditarPerfilLabel">Editar Empresa</h5>
+                    <h5 *ngIf="isDesempleado$ | async" class="modal-title" id="EditarPerfilLabel">Editar Desempleado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+
+                    <div *ngIf="isEmpresa$ | async">
+                      <div class="d-flex justify-content-center align-items-center"  >
+                        <div class="container text-center p-2 shadow-lg rounded bg-light" style="width: 800px; height: 400px;">
+                          <div  class="container"  style="width: 100%;">
+                            <div class="row" style="width: 100%;">
+
+                              <!-- IMG PROFILE -->
+                              <div class="col-3  d-flex justify-content-center align-items-center">
+                                <div *ngIf="imagePreview" class="">
+                                  <img [src]="imagePreview"
+                                  [alt]="selectedFile?.name"
+                                  class="rounded-circle border border-secondary mt-5"
+                                  style="width: 200px; height: 200px; object-fit: cover;">
+                                </div>
+                              </div>
+
+                              <div class="col" >
+
+                                <!-- TITULO -->
+                                <h2 class="form-check-label row justify-content-center mt-2">
+                                    Empresa
+                                </h2>
+
+                                <!-- EMPRESA -->
+                                <form [formGroup]="formEmpresa"  >
+                                  <div class="row">
+                                    <div class="mb-3 col text-start">
+                                      <label>Nombre Empresa</label>
+                                      <input type="text" formControlName="nombreEmpresa" class="form-control" [style.borderColor]="formEmpresa.get('nombreEmpresa')?.invalid && (formEmpresa.get('nombreEmpresa')?.touched || formEmpresa.get('nombreEmpresa')?.dirty) ? '#FF5733' : ''" />
+                                      @if (formEmpresa.get('nombreEmpresa')?.invalid && (formEmpresa.get('nombreEmpresa')?.touched || formEmpresa.get('nombreEmpresa')?.dirty)){
+                                        @if (formEmpresa.get('nombreEmpresa')?.hasError('required')){<span class="error">Nombre empresa obligatorio</span>}
+                                        @else if (formEmpresa.get('nombreEmpresa')?.hasError('minlength')){<span class="error">3 caracteres mínimo</span>}
+                                      }
+                                    </div>
+                                    <div class="mb-3 col text-start">
+                                      <label>CIF '(A58818501)'</label>
+                                      <input type="text" formControlName="nif" class="form-control" [style.borderColor]="formEmpresa.get('nif')?.invalid && (formEmpresa.get('nif')?.touched || formEmpresa.get('nif')?.dirty) ? '#FF5733' : ''"  />
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="mb-3 col text-start">
+                                      <label>Sector</label>
+                                      <select formControlName="idSector" class="form-control" [style.borderColor]="formEmpresa.get('idSector')?.invalid && (formEmpresa.get('idSector')?.touched || formEmpresa.get('idSector')?.dirty) ? '#FF5733' : ''" >
+                                        <option *ngFor="let sector of sectores" [value]="sector.IDSector">{{ sector.Nombre }}</option>
+                                      </select>
+                                      @if (formEmpresa.get('idSector')?.invalid && (formEmpresa.get('idSector')?.touched || formEmpresa.get('idSector')?.dirty)){
+                                        @if (formEmpresa.get('idSector')?.hasError('required')){<span class="error">Sector obligatorio</span>}
+                                      }
+                                    </div>
+                                    <div class="mb-3 col text-start">
+                                      <label>Ubicación</label>
+                                      <input type="text" formControlName="ubicacion" class="form-control" [style.borderColor]="formEmpresa.get('ubicacion')?.invalid && (formEmpresa.get('ubicacion')?.touched || formEmpresa.get('ubicacion')?.dirty) ? '#FF5733' : ''"  />
+                                      @if (formEmpresa.get('ubicacion')?.invalid && (formEmpresa.get('ubicacion')?.touched || formEmpresa.get('ubicacion')?.dirty)){
+                                        @if (formEmpresa.get('ubicacion')?.hasError('required')){<span class="error">Ubicación obligatoria</span>}
+                                      }
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="mb-3 col text-start">
+                                      <label>Sitio Web</label>
+                                      <input type="text" formControlName="sitioWeb" class="form-control" [style.borderColor]="formEmpresa.get('sitioWeb')?.invalid && (formEmpresa.get('sitioWeb')?.touched || formEmpresa.get('sitioWeb')?.dirty) ? '#FF5733' : ''"  />
+                                      @if (formEmpresa.get('sitioWeb')?.invalid && (formEmpresa.get('sitioWeb')?.touched || formEmpresa.get('sitioWeb')?.dirty)){
+                                        @if (formEmpresa.get('sitioWeb')?.hasError('required')){<span class="error">Sitio web obligatorio</span>}
+                                        @else if (formEmpresa.get('sitioWeb')?.hasError('invalidUrl')){<span class="error">No es un URl válidio</span>}
+                                      }
+                                    </div>
+                                    <div class="mb-3 col text-start">
+                                        <label for="imagen" >Imagen de perfil</label>
+                                        <input type="file" class="form-control" formControlName="foto" (change)="onFileSelected($event)" accept="image/*" [style.borderColor]="formEmpresa.get('foto')?.invalid && (formEmpresa.get('foto')?.touched || formEmpresa.get('foto')?.dirty) ? '#FF5733' : ''"  />
+                                        @if (formEmpresa.get('foto')?.invalid && (formEmpresa.get('foto')?.touched || formEmpresa.get('foto')?.dirty)){
+                                          @if (formEmpresa.get('foto')?.hasError('required')){<span class="error">Foto obligatoria</span>}
+                                        }
+                                    </div>
+                                  </div>
+
+                                </form>
+                              </div >
+                            </div>
+                          </div>
+                      </div>
+                      </div>
+                    </div>
+
+                    <div *ngIf="isDesempleado$ | async">
+                      <div class="d-flex justify-content-center align-items-center">
+                        <div class="container text-center p-2 shadow-lg rounded bg-light" style="width: 800px; height: 400px;">
+                          <div  class="container"  style="width: 100%;">
+                            <div class="row" style="width: 100%;">
+
+                              <!-- IMG PROFILE -->
+                              <div class="col-3  d-flex justify-content-center align-items-center">
+                                <div *ngIf="imagePreview" class="">
+                                  <img [src]="imagePreview"
+                                  [alt]="selectedFile?.name"
+                                  class="rounded-circle border border-secondary mt-5"
+                                  style="width: 200px; height: 200px; object-fit: cover;">
+                                </div>
+                              </div>
+
+                              <div class="col" >
+
+                                <!-- TITULO -->
+                                <h2 class="form-check-label row justify-content-center mt-2" for="tipoUsuarioSwitch">
+                                  Desempleado
+                                </h2>
+
+
+                                <!-- DESMPLEADO -->
+                                <form [formGroup]="formDesempleado"  >
+                                  <div class="row">
+                                    <div class="mb-3 col  text-start">
+                                      <label>Nombre</label>
+                                      <input type="text" formControlName="nombre" class="form-control" [style.borderColor]="formDesempleado.get('nombre')?.invalid && (formDesempleado.get('nombre')?.touched || formDesempleado.get('nombre')?.dirty) ? '#FF5733' : ''"/>
+                                      @if (formDesempleado.get('nombre')?.invalid && (formDesempleado.get('nombre')?.touched || formDesempleado.get('nombre')?.dirty)){
+                                        @if (formDesempleado.get('nombre')?.hasError('required')){<span class="error">Nombre es obligatorio</span>}
+                                        @else if (formDesempleado.get('nombre')?.hasError('minlength')){<span class="error">3 caracteres mínimo</span>}
+                                      }
+                                    </div>
+                                    <div class="mb-3 col  text-start">
+                                      <label>Apellido</label>
+                                      <input type="text" formControlName="apellido" class="form-control" [style.borderColor]="formDesempleado.get('apellido')?.invalid && (formDesempleado.get('apellido')?.touched || formDesempleado.get('apellido')?.dirty) ? '#FF5733' : ''" />
+                                      @if (formDesempleado.get('apellido')?.invalid && (formDesempleado.get('apellido')?.touched || formDesempleado.get('apellido')?.dirty)){
+                                        @if (formDesempleado.get('apellido')?.hasError('required')){<span class="error">Nombre es obligatorio</span>}
+                                        @else if (formDesempleado.get('apellido')?.hasError('minlength')){<span class="error">3 caracteres mínimo</span>}
+                                      }
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="mb-3 col text-start">
+                                      <label>DNI</label>
+                                      <input type="text" formControlName="dni" class="form-control" [style.borderColor]="formDesempleado.get('dni')?.invalid && (formDesempleado.get('dni')?.touched || formDesempleado.get('dni')?.dirty) ? '#FF5733' : ''" />
+                                      @if (formDesempleado.get('dni')?.invalid && (formDesempleado.get('dni')?.touched || formDesempleado.get('dni')?.dirty)){
+                                        @if (formDesempleado.get('dni')?.hasError('required')){<span class="error">Nombre es obligatorio</span>}
+                                        @else if (formDesempleado.get('dni')?.hasError('invalidFormat')){<span class="error">Formato Invalido</span>}
+                                        @else if (formDesempleado.get('dni')?.hasError('invalidLetter')){<span class="error">Letra Invalida</span>}
+                                      }
+                                    </div>
+                                    <div class="mb-3 col text-start">
+                                      <label>Portafolios (URLs)</label>
+                                      <input type="text" formControlName="portafolios" class="form-control" [style.borderColor]="formDesempleado.get('portafolios')?.invalid && (formDesempleado.get('portafolios')?.touched || formDesempleado.get('portafolios')?.dirty) ? '#FF5733' : ''" />
+                                      @if (formDesempleado.get('portafolios')?.invalid && (formDesempleado.get('portafolios')?.touched || formDesempleado.get('portafolios')?.dirty)){
+                                        @if (formDesempleado.get('portafolios')?.hasError('required')){<span class="error">Portafolio obligatorio</span>}
+                                        @else if (formDesempleado.get('portafolios')?.hasError('invalidUrl')){<span class="error">No es un URl válidio</span>}
+                                      }
+                                    </div>
+                                  </div>
+
+                                  <div class="row">
+                                    <div class="mb-3 col text-start">
+                                      <label >Disponibilidad</label>
+                                      <select formControlName="disponibilidad" class="form-control" [style.borderColor]="formDesempleado.get('disponibilidad')?.invalid && (formDesempleado.get('disponibilidad')?.touched || formDesempleado.get('disponibilidad')?.dirty) ? '#FF5733' : ''" >
+                                        <option value="">Seleccione</option>
+                                        <option *ngFor="let d of disponibilidades" [value]="d">{{ d }}</option>
+                                      </select>
+                                      @if (formDesempleado.get('disponibilidad')?.invalid && (formDesempleado.get('disponibilidad')?.touched || formDesempleado.get('disponibilidad')?.dirty)){
+                                        @if (formDesempleado.get('disponibilidad')?.hasError('required')){<span class="error">Disponibilidad obligatoria</span>}
+                                      }
+                                    </div>
+                                    <div class="mb-3 col text-start">
+                                      <label for="imagen" >Imagen de perfil</label>
+                                      <input type="file" class="form-control"  formControlName="foto"  (change)="onFileSelected($event)" accept="image/*"  [style.borderColor]="formDesempleado.get('foto')?.invalid && (formDesempleado.get('foto')?.touched || formDesempleado.get('foto')?.dirty) ? '#FF5733' : ''" />
+                                      @if (formDesempleado.get('foto')?.invalid && (formDesempleado.get('foto')?.touched || formDesempleado.get('foto')?.dirty)){
+                                        @if (formDesempleado.get('foto')?.hasError('required')){<span class="error">Foto obligatoria</span>}
+                                      }
+                                  </div>
+                                  </div>
+
+                                </form>
+
+                              </div >
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button *ngIf="isEmpresa$ | async"
+                      [disabled]="formEmpresa.invalid"
+                      type="button"
+                      class="btn btn-dark"
+                      data-bs-dismiss="modal"
+                      (click)="update()"
+                      >Editar Empresa</button>
+                    <button *ngIf="isDesempleado$ | async"
+                      [disabled]="formDesempleado.invalid"
+                      type="button"
+                      class="btn btn-dark"
+                      data-bs-dismiss="modal"
+                      (click)="update()"
+                      >Etidar Desempleado</button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-           </div>
 
+
+
+          </div>
+
+          <hr class="mx-5">
+
+          <!-- TAP -->
+          <ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation ">
+              <button class="nav-link text-muted " id="post-tab" data-bs-toggle="tab" data-bs-target="#post" type="button" role="tab" aria-controls="post" aria-selected="true">Publicaciones</button>
+            </li>
+            <li class="nav-item" role="presentation active">
+              <button class="nav-link  text-muted " id="foto-tab" data-bs-toggle="tab" data-bs-target="#foto" type="button" role="tab" aria-controls="foto" aria-selected="false">Fotos</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link text-muted " id="video-tab" data-bs-toggle="tab" data-bs-target="#video" type="button" role="tab" aria-controls="video" aria-selected="false">Videos</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link text-muted" id="document-tab" data-bs-toggle="tab" data-bs-target="#document" type="button" role="tab" aria-controls="document" aria-selected="false">Documentos</button>
+            </li>
+          </ul>
         </div>
+
+        <div class="tab-content" id="myTabContent">
+          <!-- SECCION PUBLICACION -->
+          <div class="tab-pane fade" id="post" role="tabpanel" aria-labelledby="post-tab">
+            <!-- CONTENEDOR -->
+            <div class="row justify-content-center">
+              <!-- CREAR PUBLICACION -->
+              <form class="card my-3 col-lg-7" [formGroup]="formPost"  >
+                <div class="d-flex align-items-center p-3 border-bottom">
+                  <!-- IMAGEN USUARIO -->
+                  <a href="#" class="me-2">
+                      <img [src]="(fotoPerfil$ | async)"
+                      alt="nombre usuario" class="rounded-circle" width="40" height="40">
+                  </a>
+                  <!-- CONTENIDO DE LA PUBLICACION -->
+                  <input type="text" class="btn btn-light btn-sm w-100 text-start" placeholder="Crear publicación" formControlName="contenido" class="form-control" [style.borderColor]="formPost.get('contenido')?.invalid && (formPost.get('contenido')?.touched || formPost.get('contenido')?.dirty) ? '#FF5733' : ''">
+                </div>
+
+                 <div *ngIf="imagePreviewPost" class="text-center">
+                    <img [src]="imagePreviewPost"
+                    [alt]="typeArchivo"
+                    class="rounded-circle border border-secondary mt-5"
+                    style="width: 200px; height: 200px; object-fit: cover;">
+                  </div>
+                <!-- OPCIONES -->
+                <div class="d-flex justify-content-around p-2">
+                  <!-- FOTO -->
+                  <label  for="addNewFoto" class="btn btn-light btn-sm" aria-label="Añadir una foto" type="button">
+                    <fa-icon [icon]="faImage" class="me-2"></fa-icon>
+                    Foto
+                  </label>
+                  <input type="file" formControlName="archivo" id="addNewFoto" accept="image/*" (change)="onFileSelectedPost($event,'Foto')" style="display: none;">
+                  <!-- VIDEO -->
+                  <label for="addNewVideo"  class="btn btn-light btn-sm" aria-label="Añadir un vídeo" type="button">
+                    <fa-icon [icon]="faVideo" class="me-2"></fa-icon>
+                    Vídeo
+                  </label>
+                  <input type="file" formControlName="archivo" id="addNewVideo" accept="video/*" (change)="onFileSelectedPost($event,'Video')" style="display: none;">
+                  <!-- DOCUMENTO -->
+                  <label for="addNewDocument"   class="btn btn-light btn-sm" aria-label="Añadir un documento" type="button">
+                    <fa-icon [icon]="faFile" class="me-2"></fa-icon>
+                    Documento
+                  </label>
+                  <input type="file" formControlName="archivo" id="addNewDocument" accept="application/pdf" (change)="onFileSelectedPost($event,'PDF')" style="display: none;">
+                </div>
+                <button
+                    [disabled]="formPost.invalid"
+                    type="button"
+                    class="btn btn-dark my-3"
+                    data-bs-dismiss="modal"
+                    (click)="addPost()"
+                >Agregar Publicacion</button>
+
+              </form>
+              <!-- END CREAR PUBLICACION -->
+              <!-- PUBLICACIONES -->
+              <div class="card col-lg-7 d-flex align-items-start justify-content-between my-3" *ngFor="let publicacion of posts">
+                <div class="card-body w-100" >
+                  <!-- HEADER -->
+                  <div class="d-flex  align-items-start flex-grow-1">
+                    <a href="#" aria-label="Perfil de usuario" target="_self" class="me-2">
+
+                      <img [src]="'http://127.0.0.1:8000/'+(publicacion.user?.desempleado?.Foto || publicacion.user?.empresa?.Foto || 'assets/default.png')"
+                          [alt]=" publicacion.user?.email"
+                          class="rounded-circle" width="48" height="48">
+                    </a>
+                    <div class="flex-grow-1">
+                      <h6 class="mb-0">
+                        <a href="#" aria-label="Ver" target="_self" class="text-dark text-decoration-none">
+                            {{publicacion.user?.empresa?.NombreEmpresa || publicacion.user?.desempleado?.Nombre }}
+                        </a>
+                      </h6>
+                      <p class="text-muted small mb-0">
+                        {{ publicacion.FechaPublicacion | date: 'short' }} •
+                      </p>
+                    </div>
+                     <div class="dropdown ms-auto">
+                      <button class="btn btn-light btn-sm" type="button"
+                        [id]="'dropdownMenuButton-' + publicacion.IDPublicacion"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                         <fa-icon [icon]="faEllipsis" class="me-2 fs-5"></fa-icon>
+                      </button>
+                        <ul class="dropdown-menu dropdown-menu-end" [attr.aria-labelledby]="'dropdownMenuButton-' + publicacion.IDPublicacion">
+                          <li><a class="dropdown-item"
+                            data-bs-toggle="modal"
+                            [attr.data-bs-target]="'#editPost-' + publicacion.IDPublicacion"
+                            (click)="openEditPostModal(publicacion)"
+                            >Editar</a></li>
+                          <li><a class="dropdown-item"  (click)="deletePost(publicacion)">Eliminar</a></li>
+                        </ul>
+                    </div>
+                  </div>
+                  <!-- TEXT -->
+                  <p class="card-text my-2">
+                    {{ publicacion.Contenido }}
+                  </p>
+                  <!-- MULTIMEDIA -->
+                  <div class="row">
+                    <img *ngIf="publicacion.TipoArchivo === 'Foto'"
+                        [src]="'http://127.0.0.1:8000' + publicacion.Archivo"
+                        width="100%" height="800px"
+                        alt="{{ publicacion.Contenido || 'Publicación' }}"
+                        class="card-img-top col my-4 mx-auto"
+                        style="object-fit: contain;"
+                    >
+
+                    <video *ngIf="publicacion.TipoArchivo === 'Video'" [src]="'http://127.0.0.1:8000' + publicacion.Archivo"
+                            width="100%" height="400px"
+                            class="card-img-top my-4 mx-auto"
+                            muted loop controls
+                            style="object-fit: cover;">
+                    </video>
+
+                    <iframe *ngIf="publicacion.TipoArchivo === 'PDF'"  [src]="'http://127.0.0.1:8000' + publicacion.Archivo | safePipe" class="img-fluid rounded-end" style="height: 75vh; width: 100%;"></iframe>
+
+                  </div>
+                  <!-- REACCIONES -->
+                  <div class="d-flex justify-content-around">
+                    <div class="d-flex">
+                      <button type="button" class="btn btn-sm btn-light me-2" aria-label="Recomendar" (click)="toggleLike(publicacion)">
+                        <fa-icon [icon]="faThumbsUp" class="me-2"></fa-icon>
+                        Recomendar ({{ publicacion.likes_count }})
+                      </button>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-light me-2" aria-label="Comentar">
+                      <fa-icon [icon]="faComment" class="me-2"></fa-icon>
+                      Comentar ({{ publicacion?.comentarios_count|| 0 }})
+                    </button>
+                    <div class="dropdown">
+                      <button class="btn btn-sm btn-light dropdown-toggle me-2" type="button" id="shareDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Compartir">
+                        <fa-icon [icon]="faShare" class="me-2"></fa-icon>
+                        Compartir
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="shareDropdown">
+                        <li><a class="dropdown-item" href="#">Compartir en...</a></li>
+                        <li><a class="dropdown-item" href="#">Enviar por mensaje privado</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                  <!-- COMENTAR -->
+                  <div class=" my-3">
+                    <div class="">
+                      <div class="d-flex">
+                        <div class="me-3">
+                          <img [src]="'http://127.0.0.1:8000/'+(publicacion.user?.desempleado?.Foto || publicacion.user?.empresa?.Foto || 'assets/default.png')"   alt="{{ publicacion.user?.email || 'Usuario' }}" class="rounded-circle" width="48" height="48">
+                        </div>
+                        <form class="flex-grow-1" [formGroup]="formComentario" >
+                          <div class="mb-2">
+                            <label for="commentInput-{{publicacion.IDPublicacion}}" class="visually-hidden">Añadir un comentario…</label>
+                            <textarea class="form-control" id="commentInput-{{publicacion.IDPublicacion}}" rows="1" placeholder="Añadir un comentario…" aria-label="Editor de texto para crear contenido"  formControlName="contenido" class="form-control" [style.borderColor]="formComentario.get('contenido')?.invalid && (formComentario.get('contenido')?.touched || formComentario.get('contenido')?.dirty) ? '#FF5733' : ''"></textarea>
+
+                          </div>
+                          <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                              <button type="button" class="btn btn-light btn-sm rounded-pill me-2" aria-label="Abrir el teclado de emoji">
+                                <fa-icon [icon]="faFaceLaugh" class="me-2 fs-5"></fa-icon>
+                              </button>
+                              <button type="button" class="btn btn-light btn-sm rounded-pill" aria-label="Añadir una foto">
+                                <fa-icon [icon]="faFileImage" class="me-2 fs-5"></fa-icon>
+                              </button>
+                            </div>
+                            <div>
+                              <button
+                                [disabled]="formComentario.invalid"
+                                 type="button"
+                                class="btn btn-dark btn-sm rounded-pill fs-6"
+                                (click)="addComment(publicacion.IDPublicacion)"
+                                >Publicar
+                              </button>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- COMENTARIOS -->
+                  <div class="mt-3" style="height: 135px;  overflow-y: auto;">
+                    <!-- COMENTARIO -->
+                    <div class="card p-2 mb-2" *ngFor="let comentario of publicacion.comentarios">
+                      <div class="d-flex align-items-center mb-1">
+                        <img [src]="'http://127.0.0.1:8000/'+(comentario.user?.desempleado?.Foto || comentario.user?.empresa?.Foto || 'assets/default.png')"
+                            [alt]=" comentario.user?.email || 'Usuario'"
+                            class="rounded-circle me-2" width="32" height="32">
+                        <strong>{{ (comentario.user?.desempleado?.Nombre) || ( comentario.user?.empresa?.NombreEmpresa || 'Usuario Anónimo') }}</strong>
+                        <small class="text-muted ms-auto">{{ comentario.FechaComentario | date:'short' }}</small>
+
+                        <div class="dropdown ms-2">
+                          <button class="btn btn-light btn-sm" type="button"
+                            [id]="'dropdownComentario-' + comentario.IDComentario"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <fa-icon [icon]="faEllipsis" class="me-2 fs-5"></fa-icon>
+                          </button>
+                          <ul class="dropdown-menu dropdown-menu-end" [attr.aria-labelledby]="'dropdownComentario-' + comentario.IDComentario">
+                            <li><a class="dropdown-item"
+                              data-bs-toggle="modal"
+                              [attr.data-bs-target]="'#editComment-' + comentario.IDComentario"
+                              (click)="openEditCommentModal(comentario)"
+                              >Editar</a></li>
+                            <li><a class="dropdown-item" (click)="deleteComment(comentario)">Eliminar</a></li>
+                          </ul>
+                        </div>
+
+                      </div>
+                      <p class="mb-0">{{ comentario.Contenido }}</p>
+                    </div>
+                    <!-- END COMENTARIO -->
+                    <p *ngIf="publicacion.comentarios?.length === 0" class="text-muted text-center">Sé el primero en comentar.</p>
+                  </div>
+                  <!-- MODAL EDITAR PUBLICACION -->
+                  <div class="modal fade" [id]="'editPost-' + publicacion.IDPublicacion" tabindex="-1" [attr.aria-labelledby]="'editarPostModalLabel' + publicacion.IDPublicacion" aria-hidden="true" >
+                      <div class="modal-dialog modal-dialog-centered modal-xl">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                              <h5 class="modal-title" [id]="'editPost-' + publicacion.IDDocumento">Editar Publicacion</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="resetFormPost()"></button>
+                          </div>
+
+                          <div class="modal-body">
+
+                            <div class="d-flex justify-content-center align-items-center"  >
+                              <div class="container text-center p-2 shadow-lg rounded bg-light" style="width: 800px; height: 300px;">
+                                <div  class="container"  style="width: 100%;">
+                                  <div class="row" style="width: 100%;">
+
+                                    <div class="col-3  d-flex justify-content-center align-items-center">
+                                      <div *ngIf="imagePreviewArchivo" class="">
+                                        <img [src]="imagePreviewArchivo"
+                                            alt="img"
+                                            class="rounded-circle border border-secondary mt-5"
+                                            style="width: 200px; height: 200px; object-fit: cover;">
+                                      </div>
+                                        <!-- <img *ngIf="publicacion.TipoArchivo === 'Foto'"
+                                          [src]="'http://127.0.0.1:8000' + publicacion.Archivo"
+                                          width="200" height="200"
+                                          alt="{{ publicacion.Contenido || 'Publicación' }}"
+                                          class="rounded-circle border border-secondary mt-5"
+                                          style="object-fit: cover;"
+                                      >
+
+                                      <video *ngIf="publicacion.TipoArchivo === 'Video'" [src]="'http://127.0.0.1:8000' + publicacion.Archivo"
+                                        width="200" height="200"
+                                        class="rounded-circle border border-secondary mt-5"
+                                        muted
+                                        style="object-fit: cover;">
+                                      </video>
+
+                                      <iframe *ngIf="publicacion.TipoArchivo === 'PDF'"
+                                        [src]="'http://127.0.0.1:8000' + publicacion.Archivo | safePipe"
+                                        class="rounded-circle border border-secondary mt-5"
+                                        style="height: 200px; width: 200px">
+                                      </iframe> -->
+                                    </div>
+
+                                    <div class="col" >
+                                      <h2 class="form-check-label row justify-content-center mt-2">
+                                        Editar Publicación
+                                      </h2>
+                                      <form [formGroup]="formPost" >
+                                        <div class="row">
+                                        <div class="mb-3 col text-start">
+                                          <label>Contenido</label>
+                                          <input type="text" formControlName="contenido" class="form-control" [style.borderColor]="formPost.get('contenido')?.invalid && (formPost.get('contenido')?.touched || formPost.get('contenido')?.dirty) ? '#FF5733' : ''" />
+                                          @if (formPost.get('contenido')?.invalid && (formPost.get('contenido')?.touched || formPost.get('contenido')?.dirty)){
+                                            @if (formPost.get('contenido')?.hasError('required')){<span class="error">Descripción obligatoria</span>}
+                                            @else if (formPost.get('contenido')?.hasError('minlength')){<span class="error">3 caracteres mínimo</span>}
+                                          }
+                                        </div>
+                                        </div>
+
+                                        <div class="row">
+                                        <div class="mb-3 col text-start">
+                                          <label >Reemplazar Archivo (Opcional)</label>
+                                          <input type="file"
+                                          class="form-control"
+                                          formControlName="archivo"
+                                          (change)="onFileSelectedArchivo($event,publicacion.TipoArchivo)"
+                                          [accept]="publicacion.TipoArchivo === 'Foto' ? 'image/*' :
+                                            publicacion.TipoArchivo === 'Video' ? 'video/*' :
+                                            publicacion.TipoArchivo === 'PDF' ? 'application/pdf' :
+                                            '*/*'"
+                                          [style.borderColor]="formPost.get('archivo')?.invalid && (formPost.get('archivo')?.touched || formPost.get('archivo')?.dirty) ? '#FF5733' : ''"  />
+                                          @if (formPost.get('archivo')?.invalid && (formPost.get('archivo')?.touched || formPost.get('archivo')?.dirty)){
+                                            @if (formPost.get('archivo')?.hasError('required')){<span class="error">Archivo obligatorio</span>}
+                                          }
+                                        </div>
+                                        </div>
+                                      </form>
+                                    </div >
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                          </div>
+
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetFormPost()">Cancelar</button>
+                            <button
+                              [disabled]="formPost.invalid"
+                              type="button"
+                              class="btn btn-dark"
+                              data-bs-dismiss="modal"
+                              (click)="editPost(publicacion.IDPublicacion)"
+                              >Guardar Cambios</button>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                  <!-- END MODAL EDITAR PUBLICACION -->
+                  <!-- END MODAL POST -->
+                </div>
+
+              </div>
+              <!-- END PUBLICACIONES -->
+            </div>
+            <!-- END CONTENEDOR PUBLICACIONES -->
+            <!-- SECCION MODALES  -->
+            <!-- MODAL EDITAR COMENTARIO -->
+            <div class="modal fade" id="editComentarioModal" tabindex="-1" aria-labelledby="editComentarioModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title"  id="editComentarioModalLabel">Editar Comentario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="resetFormComment()"></button>
+                  </div>
+                  <div class="modal-body">
+                    <form [formGroup]="formComentario">
+                      <div class="mb-3">
+                        <label>Contenido del Comentario</label>
+                        <textarea
+                          class="form-control"
+                          formControlName="contenido"
+                          rows="3"
+                          [style.borderColor]="formComentario.get('contenido')?.invalid && (formComentario.get('contenido')?.touched || formComentario.get('contenido')?.dirty) ? '#FF5733' : ''"
+                        ></textarea>
+                        @if (formComentario.get('contenido')?.invalid && (formComentario.get('contenido')?.touched || formComentario.get('contenido')?.dirty)){
+                          @if (formComentario.get('contenido')?.hasError('required')){<div class="error">El contenido del comentario es obligatorio.</div>}
+                          @else if (formComentario.get('contenido')?.hasError('minlength')){<div class="error">El comentario debe tener al menos 1 carácter.</div>}
+                        }
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetFormComment()">Cancelar</button>
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      (click)="updateCommet()"
+                      [disabled]="formComentario.invalid"
+                      >Guardar cambios
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- END MODAL EDITAR COMENTARIO -->
+          </div>
+          <!-- SECCION FOTO -->
+          <div class="tab-pane fade show active" id="foto" role="tabpanel" aria-labelledby="foto-tab">
+            <!-- CONTENEDOR FOTOS -->
+             <div class="container my-5">
+              <!-- HEADER -->
+              <div class="row mb-3 align-items-center">
+                <div class="col-md-6">
+                  <h2>Fotos</h2>
+                </div>
+                <div class="col-md-6 text-end">
+                  <!-- ADD FOTO -->
+                  <button type="button" class="btn btn-dark m-2" data-bs-toggle="modal" data-bs-target="#AñadirFoto" >
+                    Agregar Foto
+                  </button>
+                  <!-- MODAL ADD FOTO -->
+                  <div class="modal fade" id="AñadirFoto" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="AñadirFotolLabel" aria-hidden="true" width="800">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" width="800">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="AñadirFotolLabel">Agregar Foto</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="resetFormFoto()"></button>
+                        </div>
+                        <div class="modal-body">
+
+                          <div >
+                            <div class="d-flex justify-content-center align-items-center"  >
+                              <div class="container text-center p-2 shadow-lg rounded bg-light" style="width: 800px; height: 300px;">
+                                <div  class="container"  style="width: 100%;">
+                                  <div class="row" style="width: 100%;">
+
+                                    <!-- IMG -->
+                                    <div class="col-3  d-flex justify-content-center align-items-center">
+                                      <div *ngIf="imagePreviewFoto" class="">
+                                        <img [src]="imagePreviewFoto"
+                                        [alt]="selectedFileFoto?.name"
+                                        class="rounded-circle border border-secondary mt-5"
+                                        style="width: 200px; height: 200px; object-fit: cover;">
+                                      </div>
+                                    </div>
+
+                                    <div class="col" >
+                                      <!-- TITULO -->
+                                      <h2 class="form-check-label row justify-content-center mt-2">
+                                          Agregar Foto
+                                      </h2>
+                                      <!-- FORM -->
+                                      <form [formGroup]="formFoto"  >
+                                        <div class="row">
+                                          <div class="mb-3 col text-start">
+                                            <label>Descripcion</label>
+                                            <input type="text" formControlName="descricion" class="form-control" [style.borderColor]="formFoto.get('descricion')?.invalid && (formFoto.get('descricion')?.touched || formFoto.get('descricion')?.dirty) ? '#FF5733' : ''" />
+                                            @if (formFoto.get('descricion')?.invalid && (formFoto.get('descricion')?.touched || formFoto.get('descricion')?.dirty)){
+                                              @if (formFoto.get('descricion')?.hasError('required')){<span class="error">Descripción obligatorio</span>}
+                                              @else if (formFoto.get('descricion')?.hasError('minlength')){<span class="error">3 caracteres mínimo</span>}
+                                            }
+                                          </div>
+                                        </div>
+
+                                        <div class="row">
+                                          <div class="mb-3 col text-start">
+                                              <label for="imagen" >Imagen de perfil</label>
+                                              <input type="file" class="form-control" formControlName="foto" (change)="onFileSelectedFoto($event)" accept="image/*" [style.borderColor]="formFoto.get('foto')?.invalid && (formFoto.get('foto')?.touched || formFoto.get('foto')?.dirty) ? '#FF5733' : ''"  />
+                                              @if (formFoto.get('foto')?.invalid && (formFoto.get('foto')?.touched || formFoto.get('foto')?.dirty)){
+                                                @if (formFoto.get('foto')?.hasError('required')){<span class="error">Foto obligatoria</span>}
+                                              }
+                                          </div>
+                                        </div>
+                                      </form>
+                                    </div >
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetFormFoto()">Cancelar</button>
+                          <button
+                            [disabled]="formFoto.invalid"
+                            type="button"
+                            class="btn btn-dark"
+                            data-bs-dismiss="modal"
+                            (click)="addFoto()"
+                            >Agregar Foto</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- CONTENEDOR FOTOGRAFIAS -->
+              <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+              <!-- FOTOGRAFIAS -->
+                <div class="col" *ngFor="let foto of fotos; let i = index">
+                  <!-- FOTOGRAFIA -->
+                  <div class="card shadow-sm">
+                    <img [src]="'http://127.0.0.1:8000'+foto.URL" class="card-img-top" [alt]="foto.Descripcion || 'Foto ' + (i + 1)" style="height: 500px; object-fit: cover;">
+                    <div class="card-body">
+                      <p class="card-text"><small class="text-muted">{{ foto.Descripcion }}</small></p>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                          <button type="button"
+                                  class="btn btn-sm btn-outline-secondary"
+                                  data-bs-toggle="modal"
+                                  [attr.data-bs-target]="'#' + foto.IDDocumento">
+                            Ver
+                          </button>
+
+                          <button type="button"
+                                  class="btn btn-sm btn-outline-secondary"
+                                  data-bs-toggle="modal"
+                                  [attr.data-bs-target]="'#editarFotoModal' + foto.IDDocumento"
+                                   (click)="openEditFotoModal(foto)"
+                                  >
+                            Editar
+                          </button>
+
+                          <button type="button"
+                                  class="btn btn-sm btn-outline-secondary"
+                                  (click)="deleteFoto(foto.IDDocumento)"
+                                  >
+                            Eliminar
+                          </button>
+                        </div>
+                        <small class="text-muted">{{ foto.FechaSubida | date: 'short' }}</small>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- MODAL VER FOTOGRAFIAS -->
+                  <div class="modal fade" [id]="foto.IDDocumento" tabindex="-1" [attr.aria-labelledby]="'imageModalLabel' + foto.IDDocumento" aria-hidden="true" >
+                    <div class="modal-dialog modal-dialog-centered modal-xl">
+                      <div class="modal-content">
+                        <div class="modal-body">
+                          <div class="card mb-3">
+                            <div class="row g-0">
+
+                              <div class="col-md-4">
+                                <div class="card-body">
+                                  <h5 class="card-title">Detalle</h5>
+                                  <p class="card-text">{{ foto.Descripcion || 'Sin Descripción' }}</p>
+                                  <p class="card-text">Subida el: {{ foto.FechaSubida | date: 'medium' }}</p>
+                                  <p class="card-text">URL: <a [href]="'http://127.0.0.1:8000'+foto.URL" target="_blank">Ver archivo</a></p>
+                                  </div>
+                              </div>
+                              <div class="col-md-8  text-end">
+                                <img [src]="'http://127.0.0.1:8000'+foto.URL" class="img-fluid rounded-end" [alt]="foto.Descripcion" style="height: 75vh;">
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- MODAL EDITAR FOTOGRAFIAS -->
+                  <div class="modal fade" [id]="'editarFotoModal' + foto.IDDocumento" tabindex="-1" [attr.aria-labelledby]="'editarFotoModalLabel' + foto.IDDocumento" aria-hidden="true" >
+                      <div class="modal-dialog modal-dialog-centered modal-xl">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                              <h5 class="modal-title" [id]="'editarFotoModal' + foto.IDDocumento">Editar Foto</h5>
+
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="resetFormFoto()"></button>
+                          </div>
+
+                          <div class="modal-body">
+
+                              <div class="d-flex justify-content-center align-items-center"  >
+                                <div class="container text-center p-2 shadow-lg rounded bg-light" style="width: 800px; height: 300px;">
+                                  <div  class="container"  style="width: 100%;">
+                                    <div class="row" style="width: 100%;">
+
+                                      <div class="col-3  d-flex justify-content-center align-items-center">
+                                        <div *ngIf="imagePreviewFoto" class="">
+                                          <img [src]="imagePreviewFoto"
+                                              alt="img"
+                                              class="rounded-circle border border-secondary mt-5"
+                                              style="width: 200px; height: 200px; object-fit: cover;">
+                                        </div>
+                                      </div>
+
+                                      <div class="col" >
+                                        <h2 class="form-check-label row justify-content-center mt-2">
+                                          Editar Foto
+                                        </h2>
+                                        <form [formGroup]="formFoto" >
+                                          <div class="row">
+                                            <div class="mb-3 col text-start">
+                                              <label>Descripción</label>
+                                              <input type="text" formControlName="descricion" class="form-control" [style.borderColor]="formFoto.get('descricion')?.invalid && (formFoto.get('descricion')?.touched || formFoto.get('descricion')?.dirty) ? '#FF5733' : ''" />
+                                              @if (formFoto.get('descricion')?.invalid && (formFoto.get('descricion')?.touched || formFoto.get('descricion')?.dirty)){
+                                                @if (formFoto.get('descricion')?.hasError('required')){<span class="error">Descripción obligatoria</span>}
+                                                @else if (formFoto.get('descricion')?.hasError('minlength')){<span class="error">3 caracteres mínimo</span>}
+                                              }
+                                            </div>
+                                          </div>
+
+                                          <div class="row">
+                                            <div class="mb-3 col text-start">
+                                              <label for="imagen">Reemplazar Imagen (opcional)</label>
+                                              <input type="file" class="form-control" formControlName="foto" (change)="onFileSelectedFoto($event)" accept="image/*" [style.borderColor]="formFoto.get('foto')?.invalid && (formFoto.get('foto')?.touched || formFoto.get('foto')?.dirty) ? '#FF5733' : ''"  />
+                                              @if (formFoto.get('foto')?.invalid && (formFoto.get('foto')?.touched || formFoto.get('foto')?.dirty)){
+                                                @if (formFoto.get('foto')?.hasError('required')){<span class="error">Foto obligatoria</span>}
+                                              }
+                                            </div>
+                                          </div>
+                                        </form>
+                                      </div >
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                          </div>
+
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetFormFoto()">Cancelar</button>
+                            <button
+                              [disabled]="formFoto.invalid"
+
+                              type="button"
+                              class="btn btn-dark"
+                              data-bs-dismiss="modal"
+                              (click)="editFoto(foto.IDDocumento)"
+                              >Guardar Cambios</button>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                  <!-- END MODALES -->
+                </div>
+                <!-- END FOTOGRAFIAS -->
+              </div>
+            </div>
+            <!-- END CONTENEDOR FOTOS -->
+          </div>
+          <!-- SECCION VIDEO -->
+          <div class="tab-pane fade" id="video" role="tabpanel" aria-labelledby="video-tab">
+            <!-- CONTENEDOR VIDEO -->
+            <div class="container my-5">
+              <!-- HEADER -->
+              <div class="row mb-3 align-items-center">
+                <div class="col-md-6">
+                  <h2>Videos</h2>
+                </div>
+                <div class="col-md-6 text-end">
+                  <!-- ADD DOCUMENTO -->
+                  <button type="button" class="btn btn-dark m-2" data-bs-toggle="modal" data-bs-target="#AñadirVideo" >
+                    Agregar Video
+                  </button>
+                  <!-- MODAL ADD DOCUMENTO -->
+                  <div class="modal fade" id="AñadirVideo" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="AñadirVideoLabel" aria-hidden="true" width="800">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" width="800">
+                      <div class="modal-content">
+                        <!-- HEADER ADD MODAL PDF -->
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="AñadirVideoLabel">Agregar Video</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="resetFormVideo()"></button>
+                        </div>
+                        <!-- BODY ADD MODAL VIDEO -->
+                        <div class="modal-body">
+                          <div class="d-flex justify-content-center align-items-center"  >
+                            <div class="container text-center p-2 shadow-lg rounded bg-light" style="width: 800px; height: auto;">
+                              <div  class="container"  style="width: 100%;">
+                                <div class="row" style="width: 100%;">
+                                  <!-- IMG -->
+                                  <div class="col-3  d-flex justify-content-center align-items-center">
+                                    <div *ngIf="imagePreviewVideo" class="">
+                                      <img [src]="imagePreviewVideo"
+                                      alt="video"
+                                      class="rounded-circle border border-secondary mt-5"
+                                      style="width: 200px; height: 200px; object-fit: cover;">
+                                    </div>
+                                  </div>
+                                  <div class="col" >
+                                    <!-- TITULO -->
+                                    <h2 class="form-check-label row justify-content-center mt-2">
+                                      Agregar Video
+                                    </h2>
+                                    <!-- FORM -->
+                                    <form [formGroup]="formVideo"  >
+                                      <div class="row">
+                                        <div class="mb-3 col text-start">
+                                          <label>Descripción</label>
+                                          <input type="text" formControlName="descripcion" class="form-control" [style.borderColor]="formVideo.get('descripcion')?.invalid && (formVideo.get('descripcion')?.touched || formVideo.get('descripcion')?.dirty) ? '#FF5733' : ''" />
+                                          @if (formVideo.get('descripcion')?.invalid && (formVideo.get('descripcion')?.touched || formVideo.get('descripcion')?.dirty)){
+                                            @if (formVideo.get('descripcion')?.hasError('required')){<span class="error">Descripción obligatoria</span>}
+                                            @else if (formVideo.get('descripcion')?.hasError('minlength')){<span class="error">3 caracteres mínimo</span>}
+                                          }
+                                        </div>
+                                      </div>
+
+                                      <div class="row">
+                                        <div class="mb-3 col text-start">
+                                          <label >Video</label>
+                                          <input type="file" class="form-control" formControlName="video" (change)="onFileSelectedVideo($event)" accept="video/*" [style.borderColor]="formVideo.get('video')?.invalid && (formVideo.get('video')?.touched || formVideo.get('video')?.dirty) ? '#FF5733' : ''"  />
+                                          @if (formVideo.get('video')?.invalid && (formVideo.get('video')?.touched || formVideo.get('video')?.dirty)){
+                                            @if (formVideo.get('video')?.hasError('required')){<span class="error">Video obligatorio</span>}
+                                          }
+                                        </div>
+                                      </div>
+                                    </form>
+                                  </div >
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- FOOTER MODAL ADD PDF -->
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetFormVideo()">Cancelar</button>
+                          <button
+                            [disabled]="formVideo.invalid"
+                            type="button"
+                            class="btn btn-dark"
+                            data-bs-dismiss="modal"
+                            (click)="addVideo()"
+                            >Agregar Video</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- END MODAL ADD DOCUMENTO -->
+                </div>
+              </div>
+              <!-- CONTENEDOR VIDEOS -->
+              <div class="row  row-cols-md-1 row-cols-xl-2 g-3">
+                <!-- VIDEOS -->
+                <div class="col" *ngFor="let video of videos; let i = index">
+                  <!-- VIDEO -->
+                  <div class="card shadow-sm"  (mouseenter)="playVideo(video)" (mouseleave)="pauseVideo(video)">
+                    <video [src]="'http://127.0.0.1:8000'+video.URL" class="card-img-top video-player" [title]="video.Descripcion || 'Video ' + (i + 1)" style="height: 500px; object-fit: cover;" muted loop controls ></video>
+
+
+                    <div class="card-body">
+                      <p class="card-text"><small class="text-muted">{{ video.Descripcion }}</small></p>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                          <button type="button"
+                                  class="btn btn-sm btn-outline-secondary"
+                                  data-bs-toggle="modal"
+                                  [attr.data-bs-target]="'#' + video.IDDocumento"
+                                  (click)="openVerVideoModal(video)">
+
+
+                            Ver
+                          </button>
+
+                          <button type="button"
+                                  class="btn btn-sm btn-outline-secondary"
+                                  data-bs-toggle="modal"
+                                  [attr.data-bs-target]="'#editarVideoModal' + video.IDDocumento"
+                                   (click)="openEditVideoModal(video)"
+                                  >
+                            Editar
+                          </button>
+
+                          <button type="button"
+                                  class="btn btn-sm btn-outline-secondary"
+                                  (click)="deleteVideo(video.IDDocumento)"
+                                  >
+                            Eliminar
+                          </button>
+                        </div>
+                        <small class="text-muted">{{ video.FechaSubida | date: 'short' }}</small>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- MODAL VER DOCUMENTO -->
+                  <div class="modal fade" [id]="video.IDDocumento" tabindex="-1" [attr.aria-labelledby]="'verVideoModalLabel' + video.IDDocumento" aria-hidden="true" >
+                    <div class="modal-dialog modal-dialog-centered modal-xl">
+                      <div class="modal-content">
+                        <div class="modal-body">
+                          <div class="card mb-3">
+                            <div class="row g-0">
+
+                              <div class="col-md-4">
+                                <div class="card-body">
+                                  <h5 class="card-title">Detalle del video</h5>
+                                  <p class="card-text">{{ video.Descripcion || 'Sin Descripción' }}</p>
+                                  <p class="card-text">Subida el: {{ video.FechaSubida | date: 'medium' }}</p>
+                                  <p class="card-text">URL: <a [href]="'http://127.0.0.1:8000'+video.URL" target="_blank">Ver archivo</a></p>
+                                  </div>
+                              </div>
+                              <div class="col-md-8  text-end">
+                               <video  *ngIf="selectedVideoUrl" [src]="selectedVideoUrl" class="img-fluid rounded-end" style="height: 75vh; width: 100%;" controls></video>
+                                <p *ngIf="!selectedVideoUrl">No se pudo cargar el PDF.</p>
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- MODAL EDITAR DOCUMENTOS -->
+                  <div class="modal fade" [id]="'editarVideoModal' + video.IDDocumento" tabindex="-1" [attr.aria-labelledby]="'editarVideoModalLabel' + video.IDDocumento" aria-hidden="true" >
+                      <div class="modal-dialog modal-dialog-centered modal-xl">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                              <h5 class="modal-title" [id]="'editarVideoModal' + video.IDDocumento">Editar Video</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="resetFormVideo()"></button>
+                          </div>
+
+                          <div class="modal-body">
+
+                              <div class="d-flex justify-content-center align-items-center"  >
+                                <div class="container text-center p-2 shadow-lg rounded bg-light" style="width: 800px; height: 300px;">
+                                  <div  class="container"  style="width: 100%;">
+                                    <div class="row" style="width: 100%;">
+
+                                      <div class="col-3  d-flex justify-content-center align-items-center">
+                                        <div *ngIf="imagePreviewVideo" class="">
+                                          <img [src]="imagePreviewVideo"
+                                              alt="img"
+                                              class="rounded-circle border border-secondary mt-5"
+                                              style="width: 200px; height: 200px; object-fit: cover;">
+                                        </div>
+                                      </div>
+
+                                      <div class="col" >
+                                        <h2 class="form-check-label row justify-content-center mt-2">
+                                          Editar Video
+                                        </h2>
+                                        <form [formGroup]="formVideo" >
+                                          <div class="row">
+                                          <div class="mb-3 col text-start">
+                                            <label>Descripción</label>
+                                            <input type="text" formControlName="descripcion" class="form-control" [style.borderColor]="formVideo.get('descripcion')?.invalid && (formVideo.get('descripcion')?.touched || formVideo.get('descripcion')?.dirty) ? '#FF5733' : ''" />
+                                            @if (formVideo.get('descripcion')?.invalid && (formVideo.get('descripcion')?.touched || formVideo.get('descripcion')?.dirty)){
+                                              @if (formVideo.get('descripcion')?.hasError('required')){<span class="error">Descripción obligatoria</span>}
+                                              @else if (formVideo.get('descripcion')?.hasError('minlength')){<span class="error">3 caracteres mínimo</span>}
+                                            }
+                                          </div>
+                                          </div>
+
+                                          <div class="row">
+                                          <div class="mb-3 col text-start">
+                                            <label >Reemplazar Video (Opcional)</label>
+                                            <input type="file" class="form-control" formControlName="video" (change)="onFileSelectedFoto($event)" accept="video/*" [style.borderColor]="formVideo.get('video')?.invalid && (formVideo.get('video')?.touched || formVideo.get('video')?.dirty) ? '#FF5733' : ''"  />
+                                            @if (formVideo.get('video')?.invalid && (formVideo.get('video')?.touched || formVideo.get('video')?.dirty)){
+                                              @if (formVideo.get('video')?.hasError('required')){<span class="error">Video obligatorio</span>}
+                                            }
+                                          </div>
+                                          </div>
+                                        </form>
+                                      </div >
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                          </div>
+
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetFormVideo()">Cancelar</button>
+                            <button
+                              [disabled]="formVideo.invalid"
+
+                              type="button"
+                              class="btn btn-dark"
+                              data-bs-dismiss="modal"
+                              (click)="editVideo(video.IDDocumento)"
+                              >Guardar Cambios</button>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                  <!-- END MODALES -->
+                </div>
+                <!-- END VIDEOS -->
+              </div>
+            </div>
+            <!-- END CONTENEDOR DOCUMENTOS -->
+          </div>
+          <!-- SECCION DOCUMENTOS -->
+          <div class="tab-pane fade" id="document" role="tabpanel" aria-labelledby="document-tab">
+            <!-- CONTENEDOR DOCUMENTOS -->
+            <div class="container my-5">
+              <!-- HEADER -->
+              <div class="row mb-3 align-items-center">
+                <div class="col-md-6">
+                  <h2>Documentos</h2>
+                </div>
+                <div class="col-md-6 text-end">
+                  <!-- ADD DOCUMENTO -->
+                  <button type="button" class="btn btn-dark m-2" data-bs-toggle="modal" data-bs-target="#AñadirDocumento" >
+                    Agregar Documento
+                  </button>
+                  <!-- MODAL ADD DOCUMENTO -->
+                  <div class="modal fade" id="AñadirDocumento" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="AñadirDocumentoLabel" aria-hidden="true" width="800">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" width="800">
+                      <div class="modal-content">
+                        <!-- HEADER MODAL PDF -->
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="AñadirDocumentoLabel">Agregar Documento PDF</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="resetFormPdf()"></button>
+                        </div>
+                        <!-- BODY MODAL PDF -->
+                        <div class="modal-body">
+                          <div class="d-flex justify-content-center align-items-center"  >
+                            <div class="container text-center p-2 shadow-lg rounded bg-light" style="width: 800px; height: auto;">
+                              <div  class="container"  style="width: 100%;">
+                                <div class="row" style="width: 100%;">
+                                  <!-- IMG -->
+                                  <div class="col-3  d-flex justify-content-center align-items-center">
+                                    <div *ngIf="imagePreviewPdf" class="">
+                                      <img [src]="imagePreviewPdf"
+                                      alt="pdf"
+                                      class="rounded-circle border border-secondary mt-5"
+                                      style="width: 200px; height: 200px; object-fit: cover;">
+                                    </div>
+                                  </div>
+                                  <div class="col" >
+                                    <!-- TITULO -->
+                                    <h2 class="form-check-label row justify-content-center mt-2">
+                                      Agregar Documento PDF
+                                    </h2>
+                                    <!-- FORM -->
+                                    <form [formGroup]="formPdf"  >
+                                      <div class="row">
+                                        <div class="mb-3 col text-start">
+                                          <label>Descripción</label>
+                                          <input type="text" formControlName="descripcion" class="form-control" [style.borderColor]="formPdf.get('descripcion')?.invalid && (formPdf.get('descripcion')?.touched || formPdf.get('descripcion')?.dirty) ? '#FF5733' : ''" />
+                                          @if (formPdf.get('descripcion')?.invalid && (formPdf.get('descripcion')?.touched || formPdf.get('descripcion')?.dirty)){
+                                            @if (formPdf.get('descripcion')?.hasError('required')){<span class="error">Descripción obligatoria</span>}
+                                            @else if (formPdf.get('descripcion')?.hasError('minlength')){<span class="error">3 caracteres mínimo</span>}
+                                          }
+                                        </div>
+                                      </div>
+
+                                      <div class="row">
+                                        <div class="mb-3 col text-start">
+                                          <label for="pdfFile" >Archivo PDF</label>
+                                          <input type="file" class="form-control" formControlName="archivo" (change)="onFileSelectedPdf($event)" accept="application/pdf" [style.borderColor]="formPdf.get('archivo')?.invalid && (formPdf.get('archivo')?.touched || formPdf.get('archivo')?.dirty) ? '#FF5733' : ''"  />
+                                          @if (formPdf.get('archivo')?.invalid && (formPdf.get('archivo')?.touched || formPdf.get('archivo')?.dirty)){
+                                            @if (formPdf.get('archivo')?.hasError('required')){<span class="error">Archivo PDF obligatorio</span>}
+                                          }
+                                        </div>
+                                      </div>
+                                    </form>
+                                  </div >
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- FOOTER MODAL ADD PDF -->
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetFormPdf()">Cancelar</button>
+                          <button
+                            [disabled]="formPdf.invalid"
+                            type="button"
+                            class="btn btn-dark"
+                            data-bs-dismiss="modal"
+                            (click)="addPdf()"
+                            >Agregar Documento</button>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                  <!-- END MODAL ADD DOCUMENTO -->
+                </div>
+              </div>
+              <!-- CONTENEDOR DOCUMENTOS -->
+              <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+                <!-- DOCUMENTOS -->
+                <div class="col" *ngFor="let pdf of Pdfs; let i = index">
+                  <!-- DOCUMENTO -->
+                  <div class="card shadow-sm">
+                    <img [src]="imagePreviewPdf" class="card-img-top" [alt]="pdf.Descripcion || 'Pdf ' + (i + 1)" style="height: 500px; object-fit: cover;">
+                    <div class="card-body">
+                      <p class="card-text"><small class="text-muted">{{ pdf.Descripcion }}</small></p>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                          <button type="button"
+                                  class="btn btn-sm btn-outline-secondary"
+                                  data-bs-toggle="modal"
+                                  [attr.data-bs-target]="'#' + pdf.IDDocumento"
+                                  (click)="openVerPdfModal(pdf)">
+
+
+                            Ver
+                          </button>
+
+                          <button type="button"
+                                  class="btn btn-sm btn-outline-secondary"
+                                  data-bs-toggle="modal"
+                                  [attr.data-bs-target]="'#editarFotoModal' + pdf.IDDocumento"
+                                   (click)="openEditPdfModal(pdf)"
+                                  >
+                            Editar
+                          </button>
+
+                          <button type="button"
+                                  class="btn btn-sm btn-outline-secondary"
+                                  (click)="deletePdf(pdf.IDDocumento)"
+                                  >
+                            Eliminar
+                          </button>
+                        </div>
+                        <small class="text-muted">{{ pdf.FechaSubida | date: 'short' }}</small>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- MODAL VER DOCUMENTO -->
+                  <div class="modal fade" [id]="pdf.IDDocumento" tabindex="-1" [attr.aria-labelledby]="'imageModalLabel' + pdf.IDDocumento" aria-hidden="true" >
+                    <div class="modal-dialog modal-dialog-centered modal-xl">
+                      <div class="modal-content">
+                        <div class="modal-body">
+                          <div class="card mb-3">
+                            <div class="row g-0">
+
+                              <div class="col-md-4">
+                                <div class="card-body">
+                                  <h5 class="card-title">Detalle</h5>
+                                  <p class="card-text">{{ pdf.Descripcion || 'Sin Descripción' }}</p>
+                                  <p class="card-text">Subida el: {{ pdf.FechaSubida | date: 'medium' }}</p>
+                                  <p class="card-text">URL: <a [href]="'http://127.0.0.1:8000'+pdf.URL" target="_blank">Ver archivo</a></p>
+                                  </div>
+                              </div>
+                              <div class="col-md-8  text-end">
+                               <iframe *ngIf="selectedPdfUrl" [src]="selectedPdfUrl" class="img-fluid rounded-end" style="height: 75vh; width: 100%;"></iframe>
+                                <p *ngIf="!selectedPdfUrl">No se pudo cargar el PDF.</p>
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- MODAL EDITAR DOCUMENTOS -->
+                  <div class="modal fade" [id]="'editarFotoModal' + pdf.IDDocumento" tabindex="-1" [attr.aria-labelledby]="'editarFotoModalLabel' + pdf.IDDocumento" aria-hidden="true" >
+                      <div class="modal-dialog modal-dialog-centered modal-xl">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                              <h5 class="modal-title" [id]="'editarFotoModal' + pdf.IDDocumento">Editar Pdf</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="resetFormPdf()"></button>
+                          </div>
+
+                          <div class="modal-body">
+
+                              <div class="d-flex justify-content-center align-items-center"  >
+                                <div class="container text-center p-2 shadow-lg rounded bg-light" style="width: 800px; height: 300px;">
+                                  <div  class="container"  style="width: 100%;">
+                                    <div class="row" style="width: 100%;">
+
+                                      <div class="col-3  d-flex justify-content-center align-items-center">
+                                        <div *ngIf="imagePreviewPdf" class="">
+                                          <img [src]="imagePreviewPdf"
+                                              alt="img"
+                                              class="rounded-circle border border-secondary mt-5"
+                                              style="width: 200px; height: 200px; object-fit: cover;">
+                                        </div>
+                                      </div>
+
+                                      <div class="col" >
+                                        <h2 class="form-check-label row justify-content-center mt-2">
+                                          Editar PDF
+                                        </h2>
+                                        <form [formGroup]="formPdf" >
+                                          <div class="row">
+                                          <div class="mb-3 col text-start">
+                                            <label>Descripción</label>
+                                            <input type="text" formControlName="descripcion" class="form-control" [style.borderColor]="formPdf.get('descripcion')?.invalid && (formPdf.get('descripcion')?.touched || formPdf.get('descripcion')?.dirty) ? '#FF5733' : ''" />
+                                            @if (formPdf.get('descripcion')?.invalid && (formPdf.get('descripcion')?.touched || formPdf.get('descripcion')?.dirty)){
+                                              @if (formPdf.get('descripcion')?.hasError('required')){<span class="error">Descripción obligatoria</span>}
+                                              @else if (formPdf.get('descripcion')?.hasError('minlength')){<span class="error">3 caracteres mínimo</span>}
+                                            }
+                                          </div>
+                                          </div>
+
+                                          <div class="row">
+                                          <div class="mb-3 col text-start">
+                                            <label for="pdfFile" >Reemplazar PDF (Opcional)</label>
+                                            <input type="file" class="form-control" formControlName="archivo" (change)="onFileSelectedPdf($event)" accept="application/pdf" [style.borderColor]="formPdf.get('archivo')?.invalid && (formPdf.get('archivo')?.touched || formPdf.get('archivo')?.dirty) ? '#FF5733' : ''"  />
+                                            @if (formPdf.get('archivo')?.invalid && (formPdf.get('archivo')?.touched || formPdf.get('archivo')?.dirty)){
+                                              @if (formPdf.get('archivo')?.hasError('required')){<span class="error">Archivo PDF obligatorio</span>}
+                                            }
+                                          </div>
+                                          </div>
+                                        </form>
+                                      </div >
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                          </div>
+
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetFormPdf()">Cancelar</button>
+                            <button
+                              [disabled]="formPdf.invalid"
+
+                              type="button"
+                              class="btn btn-dark"
+                              data-bs-dismiss="modal"
+                              (click)="editPdf(pdf.IDDocumento)"
+                              >Guardar Cambios</button>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                  <!-- END MODALES -->
+                </div>
+                <!-- END FOTOGRAFIAS -->
+              </div>
+            </div>
+            <!-- END CONTENEDOR DOCUMENTOS -->
+          </div>
+        </div>
+
       </div>
       <span class="col-md-2 "></span>
 

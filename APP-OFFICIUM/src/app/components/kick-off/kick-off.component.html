@@ -13,15 +13,22 @@
           class="card-img-top mt-n5 mb-2 mx-auto ">
 
           <div class="card-body">
-            <img [src]="getFotoPerfil()"
+            <img [src]="(fotoPerfil$ | async)"
             width="72"
             height="72"
             alt="nombre usuario"
             class="mt-n5 mb-2 mx-auto rounded-circle border border-3 border-light"
             style="margin-top: -40px; object-fit: cover;">
-            <h3 class="card-title text-black">Leobardo Ríos</h3>
-            <p class="card-subtitle">Desarrollador Web</p>
-            <p class="card-text">Altea</p>
+            <h3 class="card-title text-black">{{nombre$ | async}}</h3>
+            <div *ngIf="isEmpresa$ | async">
+              <p>Empresa</p>
+            </div>
+
+            <div *ngIf="isDesempleado$ | async">
+              <p>Desempleado.</p>
+            </div>
+            <!-- <p class="card-subtitle">Desarrollador Web</p>
+            <p class="card-text">Altea</p> -->
           </div>
         </a>
       </div>
@@ -92,7 +99,7 @@
             <!-- CREAR PUBLICACION -->
             <div class="d-flex align-items-center p-3 border-bottom">
               <a href="#" class="me-2">
-                  <img src="https://media.licdn.com/dms/image/v2/C5603AQGZgthdE_5d-g/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1522663699414?e=1750291200&amp;v=beta&amp;t=BWNyUzhuXSlleBVs5DEiY76rE6Ym41v6tKwJQWtkAEI"
+                  <img [src]="(fotoPerfil$ | async)"
                   alt="nombre usuario" class="rounded-circle" width="40" height="40">
               </a>
               <input class="btn btn-light btn-sm w-100 text-start" placeholder="Crear publicación">

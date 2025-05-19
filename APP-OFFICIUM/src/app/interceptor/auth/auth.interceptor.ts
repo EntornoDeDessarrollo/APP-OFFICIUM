@@ -12,7 +12,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     });
   }
 
-  console.log("Intercerptor 1");
+  console.log("Intercerptor AuthServices Add Token");
 
   return next(req);
 };

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AuthService } from '../../../services/auth/auth.service';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NavComponent } from '../../sections/nav/nav.component';
@@ -13,36 +13,13 @@ import Swal from 'sweetalert2';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent /*implements OnInit*/  {
-  // email: string = '';
-  // password: string = '';
+export class LoginComponent {
+
   message: string = '';
   isButtonDisabled: boolean = false;
 
   //Hay que añadir el constructor y injectar el servicio auth
   constructor(private authService: AuthService, private router: Router) {}
-
-  // ngOnInit(): void {
-  //   const token = this.authService.getToken();
-  //   if (token) {
-  //     // Intenta verificar la validez del token con el backend
-  //     this.authService.testAuth().subscribe({
-  //       next: (response) => {
-  //         // Si la verificación es exitosa, redirige al usuario
-  //         this.router.navigate(['/home']); // O la ruta que corresponda
-  //       },
-  //       error: (error) => {
-  //         // Si el token no es válido o ha expirado, muestra el formulario de login
-  //         console.error('Token inválido o expirado:', error);
-  //         this.message = 'Por favor, introduce tus credenciales.';
-  //       },
-  //     });
-  //   } else {
-  //     // Si no hay token, muestra el formulario de login
-  //     this.message = 'Por favor, introduce tus credenciales.';
-  //   }
-  // }
-
 
   fb = inject(FormBuilder);
 
@@ -60,9 +37,6 @@ export class LoginComponent /*implements OnInit*/  {
 
         // Extraer el token de la respuesta y guardarlo en localStorage
         if (response.StatusCode === 200 && response.Data?.token) {
-          this.authService.saveToken(response.Data.token);
-          this.authService.setProfile(response.Data.profile);
-          console.log("Log Profile: "+response.Data.profile);
           Swal.fire({
             title: "Login exitoso",
             icon: "success",
@@ -109,7 +83,7 @@ export class LoginComponent /*implements OnInit*/  {
     this.authService.logout().subscribe({
       next:(response) => {
         console.log('Sesión cerrada');
-        this.authService.removeToken();
+
         Swal.fire({
           title: "Sesión cerrada correctamente",
           icon: "success",

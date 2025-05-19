@@ -6,7 +6,5 @@ export const authGuard: CanActivateFn = (route, state) => {
 
   const authService = inject(AuthService);
 
-  console.log(route);
-
   return authService.getToken() ? true : createUrlTreeFromSnapshot(route, ['/home']);
 };

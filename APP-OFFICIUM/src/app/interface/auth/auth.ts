@@ -1,8 +1,8 @@
 export interface EmpresaProfile {
-  IDEmpresario: number;
+  IDEmpresa: number;
   IDUsuario: number;
   NombreEmpresa: string;
-  NIF: string;
+  CIF: string;
   IDSector: number;
   Ubicacion: string;
   SitioWeb: string;
@@ -15,7 +15,7 @@ export interface DesempleadoProfile {
   IDDesempleado: number;
   IDUsuario: number;
   Nombre: string;
-  Apellidos: string;
+  Apellido: string;
   DNI: string;
   Porfolios: string;
   Disponibilidad: string;
